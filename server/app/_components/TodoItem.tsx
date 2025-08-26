@@ -1,14 +1,15 @@
 import { FaCheckCircle } from "react-icons/fa";
 import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
-import React, { useState } from "react";
+import React from "react";
 
 type TodoItemProps = {
   id: number;
   todo: TodoData;
+  isActive: boolean;
   onEditBeginingHandler?: (todo: TodoData) => void;
 };
 
-const TodoItem = ({ todo, onEditBeginingHandler }: TodoItemProps): JSX.Element => {
+const TodoItem = ({ id, todo, isActive, onEditBeginingHandler }: TodoItemProps): JSX.Element => {
 
   let itemDesign = {
     caption: "",
@@ -33,15 +34,9 @@ const TodoItem = ({ todo, onEditBeginingHandler }: TodoItemProps): JSX.Element =
       itemDesign.bgColor = "bg-emerald-500";
       break;
   }
-  
-const [active, setActive] = useState(false);
-const classToggle = () => {
-    setActive(!active)
-  }
-
 
   return (
-    <div className={`flex w-full border-2 border-gray-300 max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 ${active ? "border-red-400" : "border-double"}`}>
+    <div className={`flex w-full border-2 border-gray-300 max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 ${isActive ? "border-red-400" : ""}`}>
       <div className={`flex items-center justify-center w-12 ${itemDesign.bgColor}`}>
         {todo.status === TodoStatus.Done && (
           <FaCheckCircle className="w-6 h-6 text-white fill-current" />
@@ -59,7 +54,7 @@ const classToggle = () => {
           </p>
           <button
             className="flex w-15 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            onClick={() => {onEditBeginingHandler(todo); classToggle();}}
+            onClick={() => onEditBeginingHandler(todo)}
           >
             編集
           </button>
