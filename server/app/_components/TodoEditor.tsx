@@ -73,41 +73,34 @@ const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
           <button
             type="submit"
             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            onClick={() => openDialog("保存画面","ToDoリストに追加しますか？")}
+            onClick={() => openDialog("確認画面","ToDoリストに追加しますか？")}
           >
             保存
           </button>
         </div>
 
-        <div className="m-10">
-          <h2>タイムレコーダー</h2>
-            <button
-              type="button"
-              className="bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              onClick={() =>{
-                openDialog("確認画面","ToDoリストに追加しますか？");
-            }}
-            >
-              追加
-            </button>
-        </div>
-        <div className="m-10">
-            <dialog 
+        
+        <div>
+          <dialog 
             id="myDialog"
             className="fixed inset-0 m-auto w-fit h-fit p-6 rounded-lg shadow-lg">
-                <h2 className="text-5xl font-bold text-black-400">
-                  ダイアログのタイトル挿入
-                </h2>
-                <p className="text-3xl font-bold text-black-400">
-                  ダイアログのメッセージ挿入
-                </p>
-                <div><button 
+            <h2 className="text-5xl font-bold text-black-400">
+              ダイアログのタイトル挿入
+            </h2>
+            <p className="text-3xl font-bold text-black-400">
+              ダイアログのメッセージ挿入
+            </p>
+            
+            <div className="mt-4 flex justify-end gap-4">
+              <button 
+                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
                 onClick={() => { closeDialog(); onSubmit(todo); } }
                 >
                   はい(yes)
                 </button>
 
                 <button 
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-400"
                 onClick={() => { closeDialog(); } }
                 >
                   いいえ(no)
