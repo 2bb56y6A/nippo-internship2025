@@ -10,7 +10,7 @@ const TodoForm = ({ children }): JSX.Element => {
   const [todoList, setTodoList] = React.useState<TodoData[]>(children);
   const newTodo: TodoData = {
     id: todoList.length === 0 ? 0 : todoList.map((todo) => todo.id).reduce((val1, val2) => (Math.max(val1, val2))) + 1,
-    status: TodoStatus.Done,
+    status: TodoStatus.Backlog,
     title: "Newタスク",
     description: "タスクの説明文",
   };
