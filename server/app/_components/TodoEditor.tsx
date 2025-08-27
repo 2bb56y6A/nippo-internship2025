@@ -82,10 +82,10 @@ const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
             id="myDialog"
             className="fixed inset-0 m-auto w-fit h-fit p-6 rounded-lg shadow-lg">
             <h2 className="text-5xl font-bold text-black-400">
-              ダイアログのタイトル挿入
+              {confirmTitle}
             </h2>
             <p className="text-3xl font-bold text-black-400">
-              ダイアログのメッセージ挿入
+              {confirmMessage}
             </p>
             
             <div className="mt-4 flex justify-end gap-4">
