@@ -2,6 +2,7 @@
 
 import React from "react";
 import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
+import { SaveWords } from "@/app/_types/SaveWords";
 import TodoItem from "@/app/_components/TodoItem";
 
 
@@ -11,7 +12,12 @@ type TodoEditorProps = {
   onSubmit: (todo: TodoData) => void;
 };
 
-const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
+const saveButtonLabels = {
+  [SaveWords.isAdding]: '追加',
+  [SaveWords.isEditing]: '変更',
+};
+
+const TodoEditor = ({ editTargetTodo, onSubmit, isEditing}): JSX.Element => {
   if (!editTargetTodo) {
     return <p>loading...</p>
   };
@@ -38,10 +44,12 @@ const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
   const dialogRef = React.useRef<HTMLDialogElement>(null);
   // ダイアログ内に表示するキャプション
   const confirmTitle = "確認画面";
-  const confirmMessage = "ToDoリストに追加しますか？";
+  const confirmMessage = "ToDoリストに"+"追加しますか？";
   // ダイアログボタンクリック時の制御処理
   const openDialog = () => dialogRef.current?.showModal();
   const closeDialog = () => dialogRef.current?.close();
+
+  const saveButtonText = isEditing ? saveButtonLabels[SaveWords.isEditing] : saveButtonLabels[SaveWords.isAdding];
 
   return (
     <div className="w-100 overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
@@ -72,7 +80,7 @@ const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             onClick={() => openDialog()}
           >
-            保存
+            {saveButtonText}
           </button>
         </div>
 
