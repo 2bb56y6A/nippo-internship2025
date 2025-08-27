@@ -44,7 +44,7 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing}): JSX.Element => {
   const dialogRef = React.useRef<HTMLDialogElement>(null);
   // ダイアログ内に表示するキャプション
   const confirmTitle = "確認画面";
-  const confirmMessage = "ToDoリストに"+"追加しますか？";
+  const confirmMessage = "ToDoリストに追加しますか？";
   // ダイアログボタンクリック時の制御処理
   const openDialog = () => dialogRef.current?.showModal();
   const closeDialog = () => dialogRef.current?.close();
