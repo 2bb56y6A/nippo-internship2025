@@ -1,6 +1,5 @@
 import { FaCheckCircle } from "react-icons/fa";
 import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
-import React from "react";
 
 type TodoItemProps = {
   id: number;
