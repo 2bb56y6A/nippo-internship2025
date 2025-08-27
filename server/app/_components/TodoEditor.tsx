@@ -4,6 +4,8 @@ import React from "react";
 import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
 import TodoItem from "@/app/_components/TodoItem";
 
+
+
 type TodoEditorProps = {
   editTargetTodo: TodoData;
   onSubmit: (todo: TodoData) => void;
@@ -32,6 +34,15 @@ const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
     setTodo(newTodo);
   };
 
+  // ダイアログ要素を特定するための参照
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
+  // ダイアログ内に表示するキャプション
+  const confirmTitle = "確認画面";
+  const confirmMessage = "ToDoリストに追加しますか？";
+  // ダイアログボタンクリック時の制御処理
+  const openDialog = () => dialogRef.current?.showModal();
+  const closeDialog = () => dialogRef.current?.close();
+
   return (
     <div className="w-100 overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
       <form onSubmit={(e) => e.preventDefault()}>
@@ -59,10 +70,40 @@ const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
           <button
             type="submit"
             className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            onClick={() => onSubmit(todo)}
+            onClick={() => openDialog()}
           >
             保存
           </button>
+        </div>
+
+        
+        <div>
+          <dialog 
+            ref={dialogRef}
+            className="fixed inset-0 m-auto w-fit h-fit p-6 rounded-lg shadow-lg">
+            <h2 className="text-5xl font-bold text-black-400">
+              {confirmTitle}
+            </h2>
+            <p className="text-3xl font-bold text-black-400">
+              {confirmMessage}
+            </p>
+            
+            <div className="mt-4 flex justify-end gap-4">
+              <button 
+                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                onClick={() => { closeDialog(); onSubmit(todo); } }
+                >
+                  はい
+                </button>
+
+                <button 
+                className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
+                onClick={() => { closeDialog(); } }
+                >
+                  いいえ  
+                </button></div>
+            </dialog>
+
         </div>
       </form>
     </div>
