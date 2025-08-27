@@ -34,17 +34,14 @@ const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
     setTodo(newTodo);
   };
 
-  // ダイアログ制御関数
-    const openDialog = (title, message) => {
-        const dialog = document.getElementById("myDialog");
-        dialog.querySelector("h2").textContent = title;
-        dialog.querySelector("p").textContent = message;
-        dialog.showModal();
-    };
-    const closeDialog = () => {
-        const dialog = document.getElementById('myDialog');
-        dialog.close();
-    };
+  // ダイアログ要素を特定するための参照
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
+  // ダイアログ内に表示するキャプション
+  const confirmTitle = "確認画面";
+  const confirmMessage = "ToDoリストに追加しますか？";
+  // ダイアログボタンクリック時の制御処理
+  const openDialog = () => dialogRef.current?.showModal();
+  const closeDialog = () => dialogRef.current?.close();
 
   return (
     <div className="w-100 overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
