@@ -39,10 +39,22 @@ const TodoForm = ({ children }): JSX.Element => {
     setEditTargetTodo(todoList[idx]);
   }
 
+   const deleteTodo = (id: number) => {
+    setTodoList((prevTodoList) => {
+      // 対象のidでないTodoを残す
+      return prevTodoList.filter((todo) => {
+        return todo.id !== id;
+      });
+    });
+  };
+
   return (
     <>
       { todoList && todoList.map((item) => (
-        <TodoItem key={item.id} todo={item} onEditBeginingHandler={onTodoEditBegining} />
+        <TodoItem 
+          key={item.id} todo={item} 
+          onEditBeginingHandler={onTodoEditBegining}
+          deleteTodo={deleteTodo}/>
       ))}
       <TodoEditor editTargetTodo={editTargetTodo} onSubmit={onTodoSubmitted}/>
     </>

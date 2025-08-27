@@ -1,14 +1,16 @@
 import { FaCheckCircle, FaTrash } from "react-icons/fa";
 import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
+import React from "react";
 
 type TodoItemProps = {
   id: number;
   todo: TodoData;
   isActive: boolean;
   onEditBeginingHandler?: (todo: TodoData) => void;
+  deleteTodo: (id: number) => void;
 };
 
-const TodoItem = ({ id, todo, isActive, onEditBeginingHandler }: TodoItemProps): JSX.Element => {
+const TodoItem = ({ id, todo, isActive, onEditBeginingHandler, deleteTodo}: TodoItemProps): JSX.Element => {
 
   let itemDesign = {
     caption: "",
@@ -33,6 +35,15 @@ const TodoItem = ({ id, todo, isActive, onEditBeginingHandler }: TodoItemProps):
       itemDesign.bgColor = "bg-emerald-500";
       break;
   }
+
+    // ダイアログ要素を特定するための参照
+    const dialogRef = React.useRef<HTMLDialogElement>(null);
+    // ダイアログ内に表示するキャプション
+    const confirmTitle = "確認画面";
+    const confirmMessage = "本当に削除しますか？";
+    // ダイアログボタンクリック時の制御処理
+    const openDialog = () => dialogRef.current?.showModal();
+    const closeDialog = () => dialogRef.current?.close();
 
   return (
     <div className={`flex w-full border-2 border-gray-300 max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 ${isActive ? "border-red-400" : ""}`}>
@@ -64,12 +75,40 @@ const TodoItem = ({ id, todo, isActive, onEditBeginingHandler }: TodoItemProps):
           <button
             type="button"
             className="flex  w-15 justify-center rounded-md bg-gray-400 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400"
-            onClick={() => onEditBeginingHandler(todo)}
+            onClick={() => openDialog()}
           >
             <FaTrash />
           </button>
         </div>
       </div>
+      <div>
+          <dialog 
+            ref={dialogRef}
+            className="fixed inset-0 m-auto w-fit h-fit p-6 rounded-lg shadow-lg">
+            <h2 className="text-5xl font-bold text-black-400">
+              {confirmTitle}
+            </h2>
+            <p className="text-3xl font-bold text-black-400">
+              {confirmMessage}
+            </p>
+            
+            <div className="mt-4 flex justify-end gap-4">
+              <button 
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+                onClick={() => { closeDialog(); deleteTodo(todo.id) } }
+                >
+                  はい
+                </button>
+
+                <button 
+                className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
+                onClick={() => { closeDialog(); } }
+                >
+                  いいえ  
+                </button></div>
+            </dialog>
+
+        </div>
     </div>
   );
 };
