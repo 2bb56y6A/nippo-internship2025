@@ -79,7 +79,7 @@ const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
         
         <div>
           <dialog 
-            id="myDialog"
+            ref={dialogRef}
             className="fixed inset-0 m-auto w-fit h-fit p-6 rounded-lg shadow-lg">
             <h2 className="text-5xl font-bold text-black-400">
               {confirmTitle}
