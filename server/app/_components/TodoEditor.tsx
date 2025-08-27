@@ -9,6 +9,17 @@ type TodoEditorProps = {
   onSubmit: (todo: TodoData) => void;
 };
 
+interface StatusOption {
+  value: TodoStatus;
+  label: string;
+}
+
+const statusOptions: StatusOption[] = [
+  { value: TodoStatus.Backlog, label: '未着手' },
+  { value: TodoStatus.Inprogress, label: '対応中' },
+  { value: TodoStatus.Done, label: '完了' },
+];
+
 const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
   if (!editTargetTodo) {
     return <p>loading...</p>
@@ -32,9 +43,35 @@ const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
     setTodo(newTodo);
   };
 
+
+  const onStatusChangeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const selectedValue = parseInt(e.target.value, 10);
+    if (!isNaN(selectedValue)) {
+      const newTodo = { ...todo };
+      newTodo.status = selectedValue;
+      setTodo(newTodo);
+    }
+  };
+
   return (
     <div className="w-100 overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
       <form onSubmit={(e) => e.preventDefault()}>
+        <div className="m-2">
+          <select
+            value={String(todo.status)}
+            onChange={onStatusChangeHandler}
+            className="inline-block w-auto rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          >
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+
+        
         <div className="m-2">
           <label className="text-gray-400">タイトル</label>
           <input
