@@ -1,14 +1,13 @@
-import { FaCheckCircle, FaTrash } from "react-icons/fa";
+import { FaCheckCircle } from "react-icons/fa";
 import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
 
 type TodoItemProps = {
   id: number;
   todo: TodoData;
-  isActive: boolean;
   onEditBeginingHandler?: (todo: TodoData) => void;
 };
 
-const TodoItem = ({ id, todo, isActive, onEditBeginingHandler }: TodoItemProps): JSX.Element => {
+const TodoItem = ({ todo, onEditBeginingHandler }: TodoItemProps): JSX.Element => {
 
   let itemDesign = {
     caption: "",
@@ -35,14 +34,14 @@ const TodoItem = ({ id, todo, isActive, onEditBeginingHandler }: TodoItemProps):
   }
 
   return (
-    <div className={`flex w-full border-2 border-gray-300 max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 ${isActive ? "border-red-400" : ""}`}>
+    <div className="flex w-full border border-gray-300 max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
       <div className={`flex items-center justify-center w-12 ${itemDesign.bgColor}`}>
         {todo.status === TodoStatus.Done && (
           <FaCheckCircle className="w-6 h-6 text-white fill-current" />
         )}
       </div>
 
-      <div className="px-4 py-2 -mx-3 flex-grow">
+      <div className="px-4 py-2 -mx-3">
         <div className="mx-3">
           <span className={`font-semibold ${itemDesign.textColor}`}>
             {todo.title}
@@ -56,17 +55,6 @@ const TodoItem = ({ id, todo, isActive, onEditBeginingHandler }: TodoItemProps):
             onClick={() => onEditBeginingHandler(todo)}
           >
             編集
-          </button>
-        </div>
-      </div>
-      <div className="px-4 py-2 -mx-3 flex items-end">
-        <div className="mx-3">
-          <button
-            type="button"
-            className="flex  w-15 justify-center rounded-md bg-gray-400 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400"
-            onClick={() => onEditBeginingHandler(todo)}
-          >
-            <FaTrash />
           </button>
         </div>
       </div>
