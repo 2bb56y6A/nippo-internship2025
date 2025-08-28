@@ -1,10 +1,8 @@
 'use client';
 
 import React from "react";
-import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
-import { SaveWords } from "@/app/_types/SaveWords";
 import TodoItem from "@/app/_components/TodoItem";
-
+import { TODO_STATUSES, TODO_STATUS_LABELS, SAVE_BUTTON_LABELS, TodoStatus, TodoData, SaveWords} from "@/constants/todo";
 
 
 type TodoEditorProps = {
@@ -12,12 +10,14 @@ type TodoEditorProps = {
   onSubmit: (todo: TodoData) => void;
 };
 
-const saveButtonLabels = {
-  [SaveWords.isAdding]: '追加',
-  [SaveWords.isEditing]: '変更',
-};
+interface StatusOption {
+  value: TodoStatus;
+  label: string;
+}
 
-const TodoEditor = ({ editTargetTodo, onSubmit, isEditing}): JSX.Element => {
+const statusOptions: StatusOption[] = TODO_STATUSES;
+
+const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
   if (!editTargetTodo) {
     return <p>loading...</p>
   };
@@ -40,6 +40,15 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing}): JSX.Element => {
     setTodo(newTodo);
   };
 
+
+  const onStatusChangeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const selectedValue = parseInt(e.target.value, 10);
+    if (!isNaN(selectedValue)) {
+      const newTodo = { ...todo };
+      newTodo.status = selectedValue;
+      setTodo(newTodo);
+    }
+  };
   // ダイアログ要素を特定するための参照
   const dialogRef = React.useRef<HTMLDialogElement>(null);
   // ダイアログ内に表示するキャプション
@@ -49,11 +58,30 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing}): JSX.Element => {
   const openDialog = () => dialogRef.current?.showModal();
   const closeDialog = () => dialogRef.current?.close();
 
-  const saveButtonText = isEditing ? saveButtonLabels[SaveWords.isEditing] : saveButtonLabels[SaveWords.isAdding];
+  const saveButtonText = isEditing ? SAVE_BUTTON_LABELS[SaveWords.isEditing] : SAVE_BUTTON_LABELS[SaveWords.isAdding];
 
   return (
     <div className="w-100 overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
       <form onSubmit={(e) => e.preventDefault()}>
+        <div className="m-2">
+          <label className="text-gray-400">状態</label>
+          <div>
+            <select
+              value={String(todo.status)}
+              onChange={onStatusChangeHandler}
+              className="inline-block w-auto rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            >
+              {statusOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+
+        
         <div className="m-2">
           <label className="text-gray-400">タイトル</label>
           <input
