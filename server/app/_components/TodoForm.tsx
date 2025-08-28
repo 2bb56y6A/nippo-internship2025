@@ -5,33 +5,52 @@ import TodoItem from "@/app/_components/TodoItem";
 import { TodoStatus, TodoData} from "@/constants/todo";
 import TodoEditor from "@/app/_components/TodoEditor";
 
+// 新規Todoのテンプレート
+const newTodoTemplate = {
+  status: TodoStatus.Backlog,
+  title: "Newタスク",
+  description: "タスクの説明文",
+};
+
 const TodoForm = ({ children }): JSX.Element => {
 
   const [todoList, setTodoList] = React.useState<TodoData[]>(children);
-  const newTodo: TodoData = {
-    id: todoList.length === 0 ? 0 : todoList.map((todo) => todo.id).reduce((val1, val2) => (Math.max(val1, val2))) + 1,
-    status: TodoStatus.Backlog,
-    title: "Newタスク",
-    description: "タスクの説明文",
-  };
+  const [editingTodoIndex, setEditingTodoIndex] = React.useState<number | undefined>(undefined);
+  
+  // useStateの遅延初期化を使い、初回レンダリング時のみ実行
+  const [editTargetTodo, setEditTargetTodo] = React.useState<TodoData>(() => {
+    const initialId = todoList.length > 0 ? Math.max(...todoList.map(t => t.id)) + 1 : 1;
+    return {
+      ...newTodoTemplate,
+      id: initialId,
+    };
+  });
 
-  const [editingTodoIndex, setEditingTodoIndex] = React.useState<number>(undefined);
-  const [editTargetTodo, setEditTargetTodo] = React.useState<TodoData>(newTodo);
-
-  const onTodoSubmitted = (todo: TodoData) => {
-    switch (editingTodoIndex) {
-      case undefined:
-        setTodoList([...todoList, todo]);
-        break;
-      case 0:
-        setTodoList([todo, todoList.slice(1)].flat());
-        break;
-      default:
-        setTodoList([todoList.slice(0, editingTodoIndex), todo, todoList.slice(editingTodoIndex + 1)].flat());
+  const onTodoSubmitted = (submittedTodo: TodoData) => {
+    //更新後の新しい配列
+    let updatedList;
+    
+    if (editingTodoIndex !== undefined) {
+      // 更新処理
+      updatedList = todoList.map((item, index) =>
+        index === editingTodoIndex ? submittedTodo : item
+      );
+    } else {
+      // 新規追加処理
+      updatedList = [...todoList, submittedTodo];
     }
+
+    setTodoList(updatedList);
+    // 新しいIDを計算して新規Todoのテンプレートを更新
+    const maxId = updatedList.length > 0 ? Math.max(...updatedList.map(t => t.id)) : 0;
+    const nextNewTodo = {
+      ...newTodoTemplate,
+      id: maxId + 1,
+    };
+
+    setEditTargetTodo(nextNewTodo);
     setEditingTodoIndex(undefined);
-    setEditTargetTodo(newTodo);
-  }
+  };
 
   const onTodoEditBegining = (todo: TodoData) => {
     const idx = todoList.findIndex((item) => item.id === todo.id);
