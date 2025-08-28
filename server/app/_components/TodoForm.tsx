@@ -58,7 +58,7 @@ const TodoForm = ({ children }): JSX.Element => {
     setEditTargetTodo(todoList[idx]);
   }
 
-   const ondeleteTodo = (id: number) => {
+   const onDeleteTodo = (id: number) => {
     setTodoList((prevTodoList) => {
       // 対象のidでないTodoを残す
       return prevTodoList.filter((todo) => {
@@ -74,7 +74,7 @@ const TodoForm = ({ children }): JSX.Element => {
           key={item.id} todo={item} 
           isActive={index === editingTodoIndex}
           onEditBeginingHandler={onTodoEditBegining}
-          ondeleteTodo={ondeleteTodo}
+          onDeleteTodo={onDeleteTodo}
         />
       ))}
       <TodoEditor 
