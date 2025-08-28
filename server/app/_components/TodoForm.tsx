@@ -88,8 +88,8 @@ const TodoForm = ({ initialTodos, saveTodoAction }: TodoFormProps): JSX.Element 
       ))}
       <TodoEditor 
         editTargetTodo={editTargetTodo} 
-        onSubmit={onTodoSubmitted}
-      />
+        onSubmit={onTodoSubmitted} 
+        isEditing={editingTodoIndex !== undefined}/>
     </>
   );
 };

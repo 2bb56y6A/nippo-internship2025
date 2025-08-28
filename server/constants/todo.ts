@@ -13,6 +13,11 @@ export type TodoData = {
   description: string;
 };
 
+export enum SaveWords {
+  isAdding = 0,
+  isEditing = 1,
+};
+
 
 // ============== 定数 (from constants) ==============
 export const TODO_STATUSES = [
@@ -25,4 +30,9 @@ export const TODO_STATUS_LABELS = {
   [TodoStatus.Backlog]: '未着手',
   [TodoStatus.Inprogress]: '対応中',
   [TodoStatus.Done]: '完了'
+};
+
+export const SAVE_BUTTON_LABELS = {
+  [SaveWords.isAdding]: '追加',
+  [SaveWords.isEditing]: '変更'
 };
