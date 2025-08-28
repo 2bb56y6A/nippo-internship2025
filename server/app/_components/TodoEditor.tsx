@@ -1,9 +1,9 @@
 'use client';
 
 import React from "react";
-import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
+{/*import { TodoData } from "@/app/_types/TodoTypes";*/}
 import TodoItem from "@/app/_components/TodoItem";
-
+import { TODO_STATUSES, TODO_STATUS_LABELS, TodoStatus, TodoData} from "@/constants/todo";
 
 
 type TodoEditorProps = {
@@ -16,11 +16,7 @@ interface StatusOption {
   label: string;
 }
 
-const statusOptions: StatusOption[] = [
-  { value: TodoStatus.Backlog, label: '未着手' },
-  { value: TodoStatus.Inprogress, label: '対応中' },
-  { value: TodoStatus.Done, label: '完了' },
-];
+const statusOptions: StatusOption[] = TODO_STATUSES;
 
 const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
   if (!editTargetTodo) {
@@ -67,17 +63,20 @@ const TodoEditor = ({ editTargetTodo, onSubmit }): JSX.Element => {
     <div className="w-100 overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="m-2">
-          <select
-            value={String(todo.status)}
-            onChange={onStatusChangeHandler}
-            className="inline-block w-auto rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          >
-            {statusOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <label className="text-gray-400">状態</label>
+          <div>
+            <select
+              value={String(todo.status)}
+              onChange={onStatusChangeHandler}
+              className="inline-block w-auto rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            >
+              {statusOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
 
