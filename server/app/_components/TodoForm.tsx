@@ -2,7 +2,7 @@
 
 import React from "react";
 import TodoItem from "@/app/_components/TodoItem";
-import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
+import { TodoStatus, TodoData} from "@/constants/todo";
 import TodoEditor from "@/app/_components/TodoEditor";
 
 const TodoForm = ({ children }): JSX.Element => {

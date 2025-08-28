@@ -1,6 +1,6 @@
 import { FaCheckCircle, FaTrash } from "react-icons/fa";
-import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
 import React from "react";
+import { TODO_STATUSES, TODO_STATUS_LABELS, TodoStatus, TodoData} from "@/constants/todo";
 
 type TodoItemProps = {
   id: number;
@@ -20,17 +20,17 @@ const TodoItem = ({ todo, isActive, onEditBeginingHandler, ondeleteTodo}: TodoIt
 
   switch (todo.status) {
     case TodoStatus.Backlog:
-      itemDesign.caption = "未着手";
+      itemDesign.caption = TODO_STATUS_LABELS[TodoStatus.Backlog];
       itemDesign.textColor = "text-gray-500";
       itemDesign.bgColor = "bg-gray-500";
       break;
     case TodoStatus.Inprogress:
-      itemDesign.caption = "対応中";
+      itemDesign.caption = TODO_STATUS_LABELS[TodoStatus.Inprogress];
       itemDesign.textColor = "text-blue-500";
       itemDesign.bgColor = "bg-blue-500";
       break;
     case TodoStatus.Done:
-      itemDesign.caption = "完了"
+      itemDesign.caption = TODO_STATUS_LABELS[TodoStatus.Done];
       itemDesign.textColor = "text-emerald-500";
       itemDesign.bgColor = "bg-emerald-500";
       break;
