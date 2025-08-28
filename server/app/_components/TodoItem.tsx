@@ -107,7 +107,6 @@ const TodoItem = ({ todo, isActive, onEditBeginingHandler, ondeleteTodo}: TodoIt
                   いいえ  
                 </button></div>
             </dialog>
-
         </div>
     </div>
   );
