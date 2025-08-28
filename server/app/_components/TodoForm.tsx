@@ -61,7 +61,7 @@ const TodoForm = ({ children }): JSX.Element => {
       <TodoEditor 
         editTargetTodo={editTargetTodo} 
         onSubmit={onTodoSubmitted}
-        />
+      />
     </>
   );
 };
