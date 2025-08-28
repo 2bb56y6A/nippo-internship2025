@@ -2,7 +2,7 @@
 
 import React from "react";
 import TodoItem from "@/app/_components/TodoItem";
-import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
+import { TodoStatus, TodoData} from "@/constants/todo";
 import TodoEditor from "@/app/_components/TodoEditor";
 
 const TodoForm = ({ children }): JSX.Element => {
@@ -39,16 +39,29 @@ const TodoForm = ({ children }): JSX.Element => {
     setEditTargetTodo(todoList[idx]);
   }
 
+   const ondeleteTodo = (id: number) => {
+    setTodoList((prevTodoList) => {
+      // 対象のidでないTodoを残す
+      return prevTodoList.filter((todo) => {
+        return todo.id !== id;
+      });
+    });
+  };
+
   return (
     <>
       { todoList && todoList.map((item, index) => (
-        <
-          TodoItem key={item.id} todo={item} 
+        <TodoItem 
+          key={item.id} todo={item} 
           isActive={index === editingTodoIndex}
           onEditBeginingHandler={onTodoEditBegining}
+          ondeleteTodo={ondeleteTodo}
         />
       ))}
-      <TodoEditor editTargetTodo={editTargetTodo} onSubmit={onTodoSubmitted}/>
+      <TodoEditor 
+        editTargetTodo={editTargetTodo} 
+        onSubmit={onTodoSubmitted}
+      />
     </>
   );
 };
