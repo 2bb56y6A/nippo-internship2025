@@ -3,9 +3,7 @@ import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
 import { Pool } from "pg";
 import { revalidatePath } from 'next/cache';
 
-async function LoadTodoItemsFromDB() {
-
-  const pool = new Pool({
+const pool = new Pool({
     user: 'postgres',
     password: 'postgres',
     host: 'db',
@@ -13,11 +11,16 @@ async function LoadTodoItemsFromDB() {
     database: 'todolist',
   });
 
+async function LoadTodoItemsFromDB() {
   const client = await pool.connect();
-  const ret = await client.query('select * from todo_items', []);
-  await client.release(true);
-  return ret.rows;
-
+  try {
+    // ID順で取得することで、表示順を安定させます
+    const ret = await client.query('SELECT * FROM todo_items ORDER BY todo_id ASC');
+    return ret.rows;
+  } finally {
+    // client.release(true) の `true` は非推奨のため削除
+    client.release();
+  }
 }
 
 export default async function Home() {
@@ -34,11 +37,9 @@ export default async function Home() {
 
   // ToDoを追加または更新するための関数
   async function saveTodo(formData: FormData) {
-    'use server'; // この関数がサーバーでのみ実行されることを示す
+    'use server';
 
-    const pool = new Pool({ /* DB接続設定 */ });
     const client = await pool.connect();
-
     try {
       // フォームから送信されたデータを取得
       const id = formData.get('id') as string | null;
@@ -65,8 +66,24 @@ export default async function Home() {
       await client.release(true);
     }
 
-    // ---【重要】---
     // データベース更新後、このページのデータを再取得して画面を更新するようNext.jsに指示
+    revalidatePath('/');
+  }
+
+  // ToDoを削除するための関数
+  async function deleteTodo(id: number) {
+    'use server';
+
+    if (!id) return; // IDがない場合は何もしない
+
+    const client = await pool.connect();
+    try {
+      await client.query('DELETE FROM todo_items WHERE todo_id = $1', [id]);
+    } catch (error) {
+      console.error("Database Error:", error);
+    } finally {
+      client.release();
+    }
     revalidatePath('/');
   }
 
@@ -77,7 +94,11 @@ export default async function Home() {
         <span className="text-blue-500">Do</span>
         リスト
       </h1>
-      <TodoForm initialTodos={data} saveTodoAction={saveTodo} />
+      <TodoForm
+        initialTodos={data}
+        saveTodoAction={saveTodo}
+        deleteTodoAction={deleteTodo}
+      />
     </>
   );
 }
