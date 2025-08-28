@@ -7,10 +7,10 @@ type TodoItemProps = {
   todo: TodoData;
   isActive: boolean;
   onEditBeginingHandler?: (todo: TodoData) => void;
-  deleteTodo: (id: number) => void;
+  ondeleteTodo?: (id: number) => void;
 };
 
-const TodoItem = ({ id, todo, isActive, onEditBeginingHandler, deleteTodo}: TodoItemProps): JSX.Element => {
+const TodoItem = ({ todo, isActive, onEditBeginingHandler, ondeleteTodo}: TodoItemProps): JSX.Element => {
 
   let itemDesign = {
     caption: "",
@@ -95,7 +95,7 @@ const TodoItem = ({ id, todo, isActive, onEditBeginingHandler, deleteTodo}: Todo
             <div className="mt-4 flex justify-end gap-4">
               <button 
                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-                onClick={() => { closeDialog(); deleteTodo(todo.id) } }
+                onClick={() => { closeDialog(); ondeleteTodo(todo.id) } }
                 >
                   はい
                 </button>
