@@ -1,7 +1,6 @@
 'use client';
 
 import React from "react";
-{/*import { TodoData } from "@/app/_types/TodoTypes";*/}
 import TodoItem from "@/app/_components/TodoItem";
 import { TODO_STATUSES, TODO_STATUS_LABELS, TodoStatus, TodoData} from "@/constants/todo";
 
