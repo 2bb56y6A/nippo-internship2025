@@ -4,10 +4,11 @@ import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
 type TodoItemProps = {
   id: number;
   todo: TodoData;
+  isActive: boolean;
   onEditBeginingHandler?: (todo: TodoData) => void;
 };
 
-const TodoItem = ({ todo, onEditBeginingHandler }: TodoItemProps): JSX.Element => {
+const TodoItem = ({ id, todo, isActive, onEditBeginingHandler }: TodoItemProps): JSX.Element => {
 
   let itemDesign = {
     caption: "",
@@ -34,7 +35,7 @@ const TodoItem = ({ todo, onEditBeginingHandler }: TodoItemProps): JSX.Element =
   }
 
   return (
-    <div className="flex w-full border border-gray-300 max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
+    <div className={`flex w-full border-2 border-gray-300 max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 ${isActive ? "border-red-400" : ""}`}>
       <div className={`flex items-center justify-center w-12 ${itemDesign.bgColor}`}>
         {todo.status === TodoStatus.Done && (
           <FaCheckCircle className="w-6 h-6 text-white fill-current" />
