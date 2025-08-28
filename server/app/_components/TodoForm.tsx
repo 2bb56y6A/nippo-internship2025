@@ -5,61 +5,52 @@ import TodoItem from "@/app/_components/TodoItem";
 import { TodoStatus, TodoData} from "@/constants/todo";
 import TodoEditor from "@/app/_components/TodoEditor";
 
-type TodoFormProps = {
-  initialTodos: TodoData[];
-  // page.tsxから渡されるServer Actionの型を定義
-  saveTodoAction: (formData: FormData) => Promise<void>;
+// 新規Todoのテンプレート
+const newTodoTemplate = {
+  status: TodoStatus.Backlog,
+  title: "Newタスク",
+  description: "タスクの説明文",
 };
 
+const TodoForm = ({ children }): JSX.Element => {
 
-const TodoForm = ({ initialTodos, saveTodoAction }: TodoFormProps): JSX.Element => {
-
-  const [todoList, setTodoList] = React.useState<TodoData[]>(initialTodos);
-  const newTodo: TodoData = React.useMemo(() => {
-    const maxId = todoList.length === 0 ? 0 : Math.max(...todoList.map(todo => todo.id));
-    return {
-      id: maxId + 1, // クライアント側で一意なIDを生成
-      status: TodoStatus.Backlog,
-      title: "Newタスク",
-      description: "タスクの説明文",
-    };
-}, [todoList]);
-
-  const [editingTodoIndex, setEditingTodoIndex] = React.useState<number>(undefined);
-  const [editTargetTodo, setEditTargetTodo] = React.useState<TodoData>(newTodo);
-
-   // initialTodos プロパティの変更を監視し、todoList ステートを更新
-  React.useEffect(() => {
-    setTodoList(initialTodos);
-  }, [initialTodos]);
+  const [todoList, setTodoList] = React.useState<TodoData[]>(children);
+  const [editingTodoIndex, setEditingTodoIndex] = React.useState<number | undefined>(undefined);
   
-  // 編集ターゲットがリセットされたときに、新しいnewTodoで更新する
-  React.useEffect(() => {
-    if (editingTodoIndex === undefined) {
-      setEditTargetTodo(newTodo);
-    }
-  }, [editingTodoIndex, newTodo]);
+  // useStateの遅延初期化を使い、初回レンダリング時のみ実行
+  const [editTargetTodo, setEditTargetTodo] = React.useState<TodoData>(() => {
+    const initialId = todoList.length > 0 ? Math.max(...todoList.map(t => t.id)) + 1 : 1;
+    return {
+      ...newTodoTemplate,
+      id: initialId,
+    };
+  });
 
-  const onTodoSubmitted = async (todo: TodoData) => {
-    // FormDataオブジェクトを作成
-    const formData = new FormData();
-    formData.append('title', todo.title);
-    formData.append('description', todo.description);
-    formData.append('status', todo.status.toString());
+  const onTodoSubmitted = (submittedTodo: TodoData) => {
+    //更新後の新しい配列
+    let updatedList;
     
-    // 既存のToDoを編集している場合はIDを追加
     if (editingTodoIndex !== undefined) {
-      formData.append('id', todo.id.toString());
+      // 更新処理
+      updatedList = todoList.map((item, index) =>
+        index === editingTodoIndex ? submittedTodo : item
+      );
+    } else {
+      // 新規追加処理
+      updatedList = [...todoList, submittedTodo];
     }
 
-    // Server Action を呼び出してデータを保存
-    await saveTodoAction(formData);
+    setTodoList(updatedList);
+    // 新しいIDを計算して新規Todoのテンプレートを更新
+    const maxId = updatedList.length > 0 ? Math.max(...updatedList.map(t => t.id)) : 0;
+    const nextNewTodo = {
+      ...newTodoTemplate,
+      id: maxId + 1,
+    };
 
-    // 編集状態をリセット
-    // revalidatePath('/') により親コンポーネントが再レンダリングされ、
-    // todoList が自動的に更新されるため、クライアント側でのリスト操作は不要
+    setEditTargetTodo(nextNewTodo);
     setEditingTodoIndex(undefined);
-  }
+  };
 
   const onTodoEditBegining = (todo: TodoData) => {
     const idx = todoList.findIndex((item) => item.id === todo.id);
@@ -67,7 +58,7 @@ const TodoForm = ({ initialTodos, saveTodoAction }: TodoFormProps): JSX.Element 
     setEditTargetTodo(todoList[idx]);
   }
 
-   const ondeleteTodo = (id: number) => {
+   const onDeleteTodo = (id: number) => {
     setTodoList((prevTodoList) => {
       // 対象のidでないTodoを残す
       return prevTodoList.filter((todo) => {
@@ -83,7 +74,7 @@ const TodoForm = ({ initialTodos, saveTodoAction }: TodoFormProps): JSX.Element 
           key={item.id} todo={item} 
           isActive={index === editingTodoIndex}
           onEditBeginingHandler={onTodoEditBegining}
-          ondeleteTodo={ondeleteTodo}
+          onDeleteTodo={onDeleteTodo}
         />
       ))}
       <TodoEditor 
