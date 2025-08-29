@@ -2,7 +2,6 @@ import TodoForm from "@/app/_components/TodoForm";
 import { TodoData, TodoStatus } from "@/constants/todo";
 import { Pool } from "pg";
 import { revalidatePath } from 'next/cache';
-import ResetButton from "@/app/_components/ResetButton";
 
 const pool = new Pool({
     user: 'postgres',
@@ -118,9 +117,6 @@ export default async function Home() {
           <span className="text-blue-500">Do</span>
           リスト
         </h1>
-        <div className="ml-2">
-          <ResetButton resetDataAction={resetData} />
-        </div>
       </div>
       <TodoForm
         initialTodos={data}
