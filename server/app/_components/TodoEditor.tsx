@@ -53,9 +53,10 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing, onCancel }): JSX.Elem
   };
   
   const confirmTitle = "確認画面";
-  const confirmMessage = isEditing ? "ToDoリストを更新しますか？" : "ToDoリストに追加しますか？";
+  const confirmMessage = isEditing ? "ToDoリストを変更しますか？" : "ToDoリストに追加しますか？";
   const saveButtonText = isEditing ? SAVE_BUTTON_LABELS[SaveWords.isEditing] : SAVE_BUTTON_LABELS[SaveWords.isAdding];
 
+  // ダイアログボタンクリック時の制御処理
   const openDialog = () => dialogRef.current?.showModal();
   const closeDialog = () => dialogRef.current?.close();
 
