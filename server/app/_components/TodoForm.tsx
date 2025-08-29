@@ -2,7 +2,7 @@
 
 import React from "react";
 import TodoItem from "@/app/_components/TodoItem";
-import { TodoStatus, TodoData} from "@/constants/todo";
+import { TodoStatus, TodoData, SaveWords } from "@/constants/todo";
 import TodoEditor from "@/app/_components/TodoEditor";
 
 // 新規Todoのテンプレート
@@ -16,7 +16,7 @@ const newTodoTemplate: Omit<TodoData, 'id'> & { id: null } = {
 
 type TodoFormProps = {
   initialTodos: TodoData[];
-  saveTodoAction: (todoData: TodoData, operation: 'add' | 'edit') => Promise<void>;
+  saveTodoAction: (todoData: TodoData, operation: SaveWords) => Promise<void>;
   deleteTodoAction: (id: number) => Promise<void>;
 };
 
@@ -25,7 +25,7 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
   const [todoList, setTodoList] = React.useState<TodoData[]>(initialTodos);
   const [editingTodoIndex, setEditingTodoIndex] = React.useState<number | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-
+  const isEditing = editingTodoIndex !== undefined;
   const [editTargetTodo, setEditTargetTodo] = React.useState<TodoData | typeof newTodoTemplate>(() => {
     // この関数は初回レンダリング時に一度だけ実行されます
     return newTodoTemplate;
@@ -40,9 +40,8 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
     setIsSubmitting(true);
 
     // 編集中かどうかに基づいて操作を決定
-    const operation = editingTodoIndex !== undefined ? 'edit' : 'add';
+    const operation = isEditing ? SaveWords.isEditing : SaveWords.isAdding;
 
-    
     //DBへの保存処理はサーバーアクションに任せます。
     await saveTodoAction(submittedTodo, operation);
 
@@ -83,7 +82,7 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
       <TodoEditor 
         editTargetTodo={editTargetTodo} 
         onSubmit={onTodoSubmitted} 
-        isEditing={editingTodoIndex !== undefined}/>
+        isEditing={isEditing}/>
     </>
   );
 };

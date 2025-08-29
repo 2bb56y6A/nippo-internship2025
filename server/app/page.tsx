@@ -1,5 +1,5 @@
 import TodoForm from "@/app/_components/TodoForm";
-import { TodoData, TodoStatus } from "@/constants/todo";
+import { SaveWords, TodoData, TodoStatus } from "@/constants/todo";
 import { Pool } from "pg";
 import { revalidatePath } from 'next/cache';
 
@@ -36,13 +36,13 @@ export default async function Home() {
   });
 
   // ToDoを追加または更新するための関数
-  async function saveTodo(todo: TodoData, operation: 'add' | 'edit') {
+  async function saveTodo(todo: TodoData, operation: SaveWords) {
     'use server';
 
     const { id, title, description, status } = todo;
     const client = await pool.connect();
     try {
-      if (operation === 'edit') {
+      if (operation === SaveWords.isEditing) {
       // 編集操作の場合、IDは必須
       if (!id) {
         throw new Error('編集操作にはIDが必要です。');
@@ -53,7 +53,7 @@ export default async function Home() {
         [title, description, status, id]
       );
     } else {
-      // operation === 'add' の場合
+      // operation === SaveWords.isAdding
       // 追加処理
       await client.query(
         'INSERT INTO todo_items (title, description, state) VALUES ($1, $2, $3)',
