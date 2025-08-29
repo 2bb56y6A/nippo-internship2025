@@ -88,7 +88,6 @@ export default async function Home() {
     revalidatePath('/');
   }
 
-  // deleteTodo関数の下に追加
  async function resetData() {
   'use server';
 
@@ -113,13 +112,15 @@ export default async function Home() {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center">
         <h1 className="text-5xl font-bold text-black-400">
           <span className="text-red-500">To</span>
           <span className="text-blue-500">Do</span>
           リスト
         </h1>
-        <ResetButton resetDataAction={resetData} />
+        <div className="ml-2">
+          <ResetButton resetDataAction={resetData} />
+        </div>
       </div>
       <TodoForm
         initialTodos={data}

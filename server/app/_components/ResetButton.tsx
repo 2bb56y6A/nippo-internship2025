@@ -14,7 +14,7 @@ const ResetButton = ({ resetDataAction }: ResetButtonProps): JSX.Element => {
   
   // ダイアログに表示するテキスト
   const confirmTitle = "確認画面";
-  const confirmMessage = "本当に初期データにリセットしますか？";
+  const confirmMessage = "本当にリセットしますか？";
 
   // ダイアログを開閉する関数
   const openDialog = () => dialogRef.current?.showModal();
@@ -34,20 +34,20 @@ const ResetButton = ({ resetDataAction }: ResetButtonProps): JSX.Element => {
         className="flex items-center justify-center gap-2 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
       <FaSync />
-      {isPending ? "リセット中..." : "初期データにリセット"}
+      {isPending ? "リセット中..." : "リセット"}
       </button>
       <dialog 
         ref={dialogRef}
         className="fixed inset-0 m-auto w-fit h-fit p-6 rounded-lg shadow-lg"
       >
-        <h2 className="text-xl font-bold text-gray-800">
+        <h2 className="text-5xl font-bold text-black-400">
           {confirmTitle}
         </h2>
-        <p className="mt-2 text-gray-600">
+        <p className="text-3xl font-bold text-black-400">
           {confirmMessage}
         </p>
         
-        <div className="mt-6 flex justify-end gap-4">
+        <div className="mt-4 flex justify-end gap-4">
           <button 
             className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-400"
             onClick={() => { closeDialog(); handleReset(); } }
