@@ -26,11 +26,17 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
   const [editingTodoIndex, setEditingTodoIndex] = React.useState<number | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const isEditing = editingTodoIndex !== undefined;
+<<<<<<< HEAD
   const editTargetTodo = (editingTodoIndex !== undefined && todoList[editingTodoIndex])
     ? todoList[editingTodoIndex]
     : newTodoTemplate;
 
 
+=======
+  const editTargetTodo = (isEditing && todoList[editingTodoIndex])
+    ? todoList[editingTodoIndex]
+    : newTodoTemplate;
+>>>>>>> branch-dialog
   
   React.useEffect(() => {
     setTodoList(initialTodos);
@@ -81,11 +87,15 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
         editTargetTodo={editTargetTodo} 
         onSubmit={onTodoSubmitted} 
 <<<<<<< HEAD
+<<<<<<< HEAD
         isEditing={editingTodoIndex !== undefined}
       />
 =======
         isEditing={isEditing}/>
 >>>>>>> main
+=======
+        isEditing={isEditing}/>
+>>>>>>> branch-dialog
     </>
   );
 };

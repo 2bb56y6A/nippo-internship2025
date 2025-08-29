@@ -117,9 +117,6 @@ export default async function Home() {
           <span className="text-blue-500">Do</span>
           リスト
         </h1>
-        <div className="ml-2">
-          <ResetButton resetDataAction={resetData} />
-        </div>
       </div>
       <TodoForm
         initialTodos={data}

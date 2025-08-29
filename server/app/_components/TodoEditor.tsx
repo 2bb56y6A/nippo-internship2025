@@ -24,7 +24,6 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
   };
 
   const [todo, setTodo] = React.useState<TodoData>(editTargetTodo);
-  const dialogRef = React.useRef<HTMLDialogElement>(null);
 
   React.useEffect(() => {
     setTodo(editTargetTodo);
@@ -52,11 +51,9 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
     }
   };
   
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
   const confirmTitle = "確認画面";
   const confirmMessage = isEditing ? "ToDoリストを変更しますか？" : "ToDoリストに追加しますか？";
-  const saveButtonText = isEditing ? SAVE_BUTTON_LABELS[SaveWords.isEditing] : SAVE_BUTTON_LABELS[SaveWords.isAdding];
-
-  // ダイアログボタンクリック時の制御処理
   const openDialog = () => dialogRef.current?.showModal();
   const closeDialog = () => dialogRef.current?.close();
 
@@ -64,6 +61,8 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
     closeDialog();
     onSubmit(todo);
   };
+
+  const saveButtonText = isEditing ? SAVE_BUTTON_LABELS[SaveWords.isEditing] : SAVE_BUTTON_LABELS[SaveWords.isAdding];
 
   return (
     <div className="w-100 overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
@@ -84,8 +83,6 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
             </select>
           </div>
         </div>
-
-
         
         <div className="m-2">
           <label className="text-gray-400">タイトル</label>
