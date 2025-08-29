@@ -90,13 +90,11 @@ export default async function Home() {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-5xl font-bold text-black-400">
-          <span className="text-red-500">To</span>
-          <span className="text-blue-500">Do</span>
-          リスト
-        </h1>
-      </div>
+      <h1 className="text-5xl font-bold text-black-400">
+        <span className="text-red-500">To</span>
+        <span className="text-blue-500">Do</span>
+        リスト
+      </h1>
       <TodoForm
         initialTodos={data}
         saveTodoAction={saveTodo}
