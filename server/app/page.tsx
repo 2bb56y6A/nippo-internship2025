@@ -110,6 +110,24 @@ export default async function Home() {
     revalidatePath('/');
   }
 
+  // ToDoのステータスを更新するための関数
+  async function updateTodoStatus(id: number, status: TodoStatus) {
+    'use server';
+
+    const client = await pool.connect();
+    try {
+      await client.query(
+        'UPDATE todo_items SET state = $1 WHERE todo_id = $2',
+        [status, id]
+      );
+    } catch (error) {
+      console.error("Database Error:", error);
+    } finally {
+      client.release();
+    }
+    revalidatePath('/');
+  }
+
   return (
     <>
       <div className="flex items-center">
@@ -126,6 +144,7 @@ export default async function Home() {
         initialTodos={data}
         saveTodoAction={saveTodo}
         deleteTodoAction={deleteTodo}
+        updateTodoStatusAction={updateTodoStatus} 
       />
     </>
   );

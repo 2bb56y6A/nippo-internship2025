@@ -3,11 +3,14 @@
 import React from "react";
 import TodoItem from "@/app/_components/TodoItem";
 import { TODO_STATUSES, TODO_STATUS_LABELS, SAVE_BUTTON_LABELS, TodoStatus, TodoData, SaveWords} from "@/constants/todo";
-
+import { FaTimesCircle } from "react-icons/fa"
+import ConfirmDialog from "@/app/_components/ConfirmDialog";
 
 type TodoEditorProps = {
   editTargetTodo: TodoData;
   onSubmit: (todo: TodoData) => void;
+  isEditing: boolean;
+  onCancel: () => void;
 };
 
 interface StatusOption {
@@ -17,12 +20,13 @@ interface StatusOption {
 
 const statusOptions: StatusOption[] = TODO_STATUSES;
 
-const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
+const TodoEditor = ({ editTargetTodo, onSubmit, isEditing, onCancel }): JSX.Element => {
   if (!editTargetTodo) {
     return <p>loading...</p>
   };
 
   const [todo, setTodo] = React.useState<TodoData>(editTargetTodo);
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
 
   React.useEffect(() => {
     setTodo(editTargetTodo);
@@ -49,16 +53,18 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
       setTodo(newTodo);
     }
   };
-  // ダイアログ要素を特定するための参照
-  const dialogRef = React.useRef<HTMLDialogElement>(null);
-  // ダイアログ内に表示するキャプション
+  
   const confirmTitle = "確認画面";
-  const confirmMessage = isEditing ? "ToDoリストを更新しますか？":"ToDoリストに追加しますか？";
-  // ダイアログボタンクリック時の制御処理
+  const confirmMessage = isEditing ? "ToDoリストを更新しますか？" : "ToDoリストに追加しますか？";
+  const saveButtonText = isEditing ? SAVE_BUTTON_LABELS[SaveWords.isEditing] : SAVE_BUTTON_LABELS[SaveWords.isAdding];
+
   const openDialog = () => dialogRef.current?.showModal();
   const closeDialog = () => dialogRef.current?.close();
 
-  const saveButtonText = isEditing ? SAVE_BUTTON_LABELS[SaveWords.isEditing] : SAVE_BUTTON_LABELS[SaveWords.isAdding];
+  const onConfirm = () => {
+    closeDialog();
+    onSubmit(todo);
+  };
 
   return (
     <div className="w-100 overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
@@ -77,6 +83,17 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
                 </option>
               ))}
             </select>
+
+            {isEditing && (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="p-1 text-gray-400 rounded-full hover:bg-gray-200 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                aria-label="編集をやめる"
+              >
+                <FaTimesCircle className="w-6 h-6" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -111,37 +128,15 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
             {saveButtonText}
           </button>
         </div>
-
-        
-        <div>
-          <dialog 
-            ref={dialogRef}
-            className="fixed inset-0 m-auto w-fit h-fit p-6 rounded-lg shadow-lg">
-            <h2 className="text-5xl font-bold text-black-400">
-              {confirmTitle}
-            </h2>
-            <p className="text-3xl font-bold text-black-400">
-              {confirmMessage}
-            </p>
-            
-            <div className="mt-4 flex justify-end gap-4">
-              <button 
-                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
-                onClick={() => { closeDialog(); onSubmit(todo); } }
-                >
-                  はい
-                </button>
-
-                <button 
-                className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
-                onClick={() => { closeDialog(); } }
-                >
-                  いいえ  
-                </button></div>
-            </dialog>
-
-        </div>
       </form>
+      <ConfirmDialog
+        ref={dialogRef}
+        title={confirmTitle}
+        message={confirmMessage}
+        onConfirm={onConfirm}
+        onCancel={closeDialog}
+        confirmButtonClassName="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+      />
     </div>
   );
   

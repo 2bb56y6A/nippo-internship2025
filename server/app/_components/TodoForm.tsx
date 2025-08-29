@@ -18,18 +18,18 @@ type TodoFormProps = {
   initialTodos: TodoData[];
   saveTodoAction: (formData: FormData) => Promise<void>;
   deleteTodoAction: (id: number) => Promise<void>;
+  updateTodoStatusAction: (id: number, status: TodoStatus) => Promise<void>;
 };
 
-const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormProps): JSX.Element => {
+const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction, updateTodoStatusAction }: TodoFormProps): JSX.Element => {
 
   const [todoList, setTodoList] = React.useState<TodoData[]>(initialTodos);
   const [editingTodoIndex, setEditingTodoIndex] = React.useState<number | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const [editTargetTodo, setEditTargetTodo] = React.useState<TodoData | typeof newTodoTemplate>(() => {
-    // この関数は初回レンダリング時に一度だけ実行されます
-    return newTodoTemplate;
-  });
+  const editTargetTodo = (editingTodoIndex !== undefined && todoList[editingTodoIndex])
+    ? todoList[editingTodoIndex]
+    : newTodoTemplate;
   
   React.useEffect(() => {
     setTodoList(initialTodos);
@@ -55,15 +55,17 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
 
     // フォームを新規作成モードに戻す
     setEditingTodoIndex(undefined);
-    setEditTargetTodo(newTodoTemplate);
     setIsSubmitting(false);
   };
 
   const onTodoEditBegining = (todo: TodoData) => {
     const idx = todoList.findIndex((item) => item.id === todo.id);
     setEditingTodoIndex(idx);
-    setEditTargetTodo(todoList[idx]);
   }
+
+  const onTodoEditCancel = () => {
+    setEditingTodoIndex(undefined);
+  };
 
    const onDeleteTodo = async (id: number) => {
     if (isSubmitting) return;
@@ -73,7 +75,25 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
 
     // フォームを新規作成モードに戻す
     setEditingTodoIndex(undefined);
-    setEditTargetTodo(newTodoTemplate);
+    setIsSubmitting(false);
+  };
+
+  const onTodoStatusChange = async (todoId: number) => {
+    const targetTodo = todoList.find(todo => todo.id === todoId);
+    if (!targetTodo || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    let newStatus;
+    switch (targetTodo.status) {
+      case TodoStatus.Backlog:   newStatus = TodoStatus.Inprogress; break;
+      case TodoStatus.Inprogress: newStatus = TodoStatus.Done;       break;
+      case TodoStatus.Done:       newStatus = TodoStatus.Backlog;    break;
+      default:                  newStatus = targetTodo.status;
+    }
+
+    // サーバーアクションを呼び出してDBを更新
+    await updateTodoStatusAction(todoId, newStatus);
     setIsSubmitting(false);
   };
 
@@ -85,12 +105,15 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
           isActive={index === editingTodoIndex}
           onEditBeginingHandler={onTodoEditBegining}
           onDeleteTodo={onDeleteTodo}
+          onTodoStatusChange={onTodoStatusChange}
         />
       ))}
       <TodoEditor 
         editTargetTodo={editTargetTodo} 
         onSubmit={onTodoSubmitted} 
-        isEditing={editingTodoIndex !== undefined}/>
+        isEditing={editingTodoIndex !== undefined}
+        onCancel={onTodoEditCancel}
+      />
     </>
   );
 };
