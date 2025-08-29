@@ -25,7 +25,6 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
 
   const [todo, setTodo] = React.useState<TodoData>(editTargetTodo);
 
-
   React.useEffect(() => {
     setTodo(editTargetTodo);
   }, [editTargetTodo]);
@@ -85,8 +84,6 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
             </select>
           </div>
         </div>
-
-
         
         <div className="m-2">
           <label className="text-gray-400">タイトル</label>
