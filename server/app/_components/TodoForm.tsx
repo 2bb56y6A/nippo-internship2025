@@ -18,10 +18,9 @@ type TodoFormProps = {
   initialTodos: TodoData[];
   saveTodoAction: (formData: FormData) => Promise<void>;
   deleteTodoAction: (id: number) => Promise<void>;
-  updateTodoStatusAction: (id: number, status: TodoStatus) => Promise<void>;
 };
 
-const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction, updateTodoStatusAction }: TodoFormProps): JSX.Element => {
+const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormProps): JSX.Element => {
 
   const [todoList, setTodoList] = React.useState<TodoData[]>(initialTodos);
   const [editingTodoIndex, setEditingTodoIndex] = React.useState<number | undefined>(undefined);
@@ -74,25 +73,6 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction, updateTodoSt
     setIsSubmitting(false);
   };
 
-  const onTodoStatusChange = async (todoId: number) => {
-    const targetTodo = todoList.find(todo => todo.id === todoId);
-    if (!targetTodo || isSubmitting) return;
-
-    setIsSubmitting(true);
-
-    let newStatus;
-    switch (targetTodo.status) {
-      case TodoStatus.Backlog:   newStatus = TodoStatus.Inprogress; break;
-      case TodoStatus.Inprogress: newStatus = TodoStatus.Done;       break;
-      case TodoStatus.Done:       newStatus = TodoStatus.Backlog;    break;
-      default:                  newStatus = targetTodo.status;
-    }
-
-    // サーバーアクションを呼び出してDBを更新
-    await updateTodoStatusAction(todoId, newStatus);
-    setIsSubmitting(false);
-  };
-
   return (
     <>
       { todoList && todoList.map((item, index) => (
@@ -101,7 +81,6 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction, updateTodoSt
           isActive={index === editingTodoIndex}
           onEditBeginingHandler={onTodoEditBegining}
           onDeleteTodo={onDeleteTodo}
-          onTodoStatusChange={onTodoStatusChange}
         />
       ))}
       <TodoEditor 

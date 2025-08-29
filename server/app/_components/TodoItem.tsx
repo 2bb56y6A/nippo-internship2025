@@ -9,10 +9,9 @@ type TodoItemProps = {
   isActive: boolean;
   onEditBeginingHandler?: (todo: TodoData) => void;
   onDeleteTodo?: (id: number) => void;
-  onTodoStatusChange?: (id: number) => void;
 };
 
-const TodoItem = ({ todo, isActive, onEditBeginingHandler, onDeleteTodo, onTodoStatusChange }: TodoItemProps): JSX.Element => {
+const TodoItem = ({ todo, isActive, onEditBeginingHandler, onDeleteTodo }: TodoItemProps): JSX.Element => {
 
   let itemDesign = {
     caption: "",
@@ -55,18 +54,11 @@ const TodoItem = ({ todo, isActive, onEditBeginingHandler, onDeleteTodo, onTodoS
   return (
     <div className={`flex w-full border-2 border-gray-300 max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 ${isActive ? "border-red-400" : ""}`}>
       <div className={`flex items-center justify-center w-12 ${itemDesign.bgColor}`}>
-        <button
-          type="button"
-          className="w-full h-full flex items-center justify-center"
-          onClick={() => onTodoStatusChange(todo.id)}
-          aria-label="ステータスを変更"
-        >
-          <div className={`flex items-center justify-center w-6 h-6 rounded-full transition-colors ${todo.status === TodoStatus.Done ? 'bg-transparent' : 'bg-white/50 hover:bg-white/80'}`}>
+        <div>
             {todo.status === TodoStatus.Done && (
               <FaCheckCircle className="w-6 h-6 text-white fill-current" />
             )}
           </div>
-        </button>
       </div>
 
       <div className="px-4 py-2 -mx-3 flex-grow">
