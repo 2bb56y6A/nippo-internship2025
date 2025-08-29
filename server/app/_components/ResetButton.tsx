@@ -10,25 +10,23 @@ type ResetButtonProps = {
 
 const ResetButton = ({ resetDataAction }: ResetButtonProps): JSX.Element => {
   const [isPending, startTransition] = React.useTransition();
+  
   const dialogRef = React.useRef<HTMLDialogElement>(null);
-
   const confirmTitle = "確認画面";
   const confirmMessage = "本当にリセットしますか？";
-
   const openDialog = () => dialogRef.current?.showModal();
   const closeDialog = () => dialogRef.current?.close();
+  const onConfirm = () => {
+    closeDialog();
+    handleReset();
+  };
 
   const handleReset = () => {
     startTransition(async () => {
       await resetDataAction();
     });
   };
-
-  const onConfirm = () => {
-    closeDialog();
-    handleReset();
-  };
-
+  
   return (
     <>
       <button

@@ -56,7 +56,6 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
   const confirmMessage = isEditing ? "ToDoリストを変更しますか？" : "ToDoリストに追加しますか？";
   const openDialog = () => dialogRef.current?.showModal();
   const closeDialog = () => dialogRef.current?.close();
-
   const onConfirm = () => {
     closeDialog();
     onSubmit(todo);

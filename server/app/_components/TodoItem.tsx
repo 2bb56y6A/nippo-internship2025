@@ -40,10 +40,8 @@ const TodoItem = ({ todo, isActive, onEditBeginingHandler, onDeleteTodo }: TodoI
   const dialogRef = React.useRef<HTMLDialogElement>(null);
   const confirmTitle = "確認画面";
   const confirmMessage = "本当に削除しますか？";
-
   const openDialog = () => dialogRef.current?.showModal();
   const closeDialog = () => dialogRef.current?.close();
-
   const onConfirm = () => {
     closeDialog();
     if (onDeleteTodo) {
