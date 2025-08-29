@@ -1,6 +1,7 @@
 import { FaCheckCircle, FaTrash } from "react-icons/fa";
 import React from "react";
 import { TODO_STATUSES, TODO_STATUS_LABELS, TodoStatus, TodoData} from "@/constants/todo";
+import ConfirmDialog from "@/app/_components/ConfirmDialog";
 
 type TodoItemProps = {
   id: number;
@@ -10,7 +11,7 @@ type TodoItemProps = {
   onDeleteTodo?: (id: number) => void;
 };
 
-const TodoItem = ({ todo, isActive, onEditBeginingHandler, onDeleteTodo}: TodoItemProps): JSX.Element => {
+const TodoItem = ({ todo, isActive, onEditBeginingHandler, onDeleteTodo }: TodoItemProps): JSX.Element => {
 
   let itemDesign = {
     caption: "",
@@ -36,21 +37,28 @@ const TodoItem = ({ todo, isActive, onEditBeginingHandler, onDeleteTodo}: TodoIt
       break;
   }
 
-    // ダイアログ要素を特定するための参照
-    const dialogRef = React.useRef<HTMLDialogElement>(null);
-    // ダイアログ内に表示するキャプション
-    const confirmTitle = "確認画面";
-    const confirmMessage = "本当に削除しますか？";
-    // ダイアログボタンクリック時の制御処理
-    const openDialog = () => dialogRef.current?.showModal();
-    const closeDialog = () => dialogRef.current?.close();
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
+  const confirmTitle = "確認画面";
+  const confirmMessage = "本当に削除しますか？";
+
+  const openDialog = () => dialogRef.current?.showModal();
+  const closeDialog = () => dialogRef.current?.close();
+
+  const onConfirm = () => {
+    closeDialog();
+    if (onDeleteTodo) {
+      onDeleteTodo(todo.id);
+    }
+  };
 
   return (
     <div className={`flex w-full border-2 border-gray-300 max-w-sm overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 ${isActive ? "border-red-400" : ""}`}>
       <div className={`flex items-center justify-center w-12 ${itemDesign.bgColor}`}>
-        {todo.status === TodoStatus.Done && (
-          <FaCheckCircle className="w-6 h-6 text-white fill-current" />
-        )}
+        <div>
+            {todo.status === TodoStatus.Done && (
+              <FaCheckCircle className="w-6 h-6 text-white fill-current" />
+            )}
+          </div>
       </div>
 
       <div className="px-4 py-2 -mx-3 flex-grow">
@@ -81,33 +89,14 @@ const TodoItem = ({ todo, isActive, onEditBeginingHandler, onDeleteTodo}: TodoIt
           </button>
         </div>
       </div>
-      <div>
-          <dialog 
-            ref={dialogRef}
-            className="fixed inset-0 m-auto w-fit h-fit p-6 rounded-lg shadow-lg">
-            <h2 className="text-5xl font-bold text-black-400">
-              {confirmTitle}
-            </h2>
-            <p className="text-3xl font-bold text-black-400">
-              {confirmMessage}
-            </p>
-            
-            <div className="mt-4 flex justify-end gap-4">
-              <button 
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
-                onClick={() => { closeDialog(); onDeleteTodo(todo.id) } }
-                >
-                  はい
-                </button>
-
-                <button 
-                className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
-                onClick={() => { closeDialog(); } }
-                >
-                  いいえ  
-                </button></div>
-            </dialog>
-        </div>
+      <ConfirmDialog
+        ref={dialogRef}
+        title={confirmTitle}
+        message={confirmMessage}
+        onConfirm={onConfirm}
+        onCancel={closeDialog}
+        confirmButtonClassName="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+      />
     </div>
   );
 };

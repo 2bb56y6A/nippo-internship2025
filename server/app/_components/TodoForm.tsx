@@ -26,10 +26,9 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
   const [editingTodoIndex, setEditingTodoIndex] = React.useState<number | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const isEditing = editingTodoIndex !== undefined;
-  const [editTargetTodo, setEditTargetTodo] = React.useState<TodoData | typeof newTodoTemplate>(() => {
-    // この関数は初回レンダリング時に一度だけ実行されます
-    return newTodoTemplate;
-  });
+  const editTargetTodo = (isEditing && todoList[editingTodoIndex])
+    ? todoList[editingTodoIndex]
+    : newTodoTemplate;
   
   React.useEffect(() => {
     setTodoList(initialTodos);
@@ -47,14 +46,12 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
 
     // フォームを新規作成モードに戻す
     setEditingTodoIndex(undefined);
-    setEditTargetTodo(newTodoTemplate);
     setIsSubmitting(false);
   };
 
   const onTodoEditBegining = (todo: TodoData) => {
     const idx = todoList.findIndex((item) => item.id === todo.id);
     setEditingTodoIndex(idx);
-    setEditTargetTodo(todoList[idx]);
   }
 
    const onDeleteTodo = async (id: number) => {
@@ -65,7 +62,6 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
 
     // フォームを新規作成モードに戻す
     setEditingTodoIndex(undefined);
-    setEditTargetTodo(newTodoTemplate);
     setIsSubmitting(false);
   };
 

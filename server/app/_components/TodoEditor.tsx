@@ -3,11 +3,12 @@
 import React from "react";
 import TodoItem from "@/app/_components/TodoItem";
 import { TODO_STATUSES, TODO_STATUS_LABELS, SAVE_BUTTON_LABELS, TodoStatus, TodoData, SaveWords} from "@/constants/todo";
-
+import ConfirmDialog from "@/app/_components/ConfirmDialog";
 
 type TodoEditorProps = {
   editTargetTodo: TodoData;
   onSubmit: (todo: TodoData) => void;
+  isEditing: boolean;
 };
 
 interface StatusOption {
@@ -49,14 +50,18 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
       setTodo(newTodo);
     }
   };
-  // ダイアログ要素を特定するための参照
+  
   const dialogRef = React.useRef<HTMLDialogElement>(null);
-  // ダイアログ内に表示するキャプション
   const confirmTitle = "確認画面";
   const confirmMessage = isEditing ? "ToDoリストを変更しますか？" : "ToDoリストに追加しますか？";
-  // ダイアログボタンクリック時の制御処理
+
   const openDialog = () => dialogRef.current?.showModal();
   const closeDialog = () => dialogRef.current?.close();
+
+  const onConfirm = () => {
+    closeDialog();
+    onSubmit(todo);
+  };
 
   const saveButtonText = isEditing ? SAVE_BUTTON_LABELS[SaveWords.isEditing] : SAVE_BUTTON_LABELS[SaveWords.isAdding];
 
@@ -79,8 +84,6 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
             </select>
           </div>
         </div>
-
-
         
         <div className="m-2">
           <label className="text-gray-400">タイトル</label>
@@ -111,37 +114,15 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
             {saveButtonText}
           </button>
         </div>
-
-        
-        <div>
-          <dialog 
-            ref={dialogRef}
-            className="fixed inset-0 m-auto w-fit h-fit p-6 rounded-lg shadow-lg">
-            <h2 className="text-5xl font-bold text-black-400">
-              {confirmTitle}
-            </h2>
-            <p className="text-3xl font-bold text-black-400">
-              {confirmMessage}
-            </p>
-            
-            <div className="mt-4 flex justify-end gap-4">
-              <button 
-                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
-                onClick={() => { closeDialog(); onSubmit(todo); } }
-                >
-                  はい
-                </button>
-
-                <button 
-                className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
-                onClick={() => { closeDialog(); } }
-                >
-                  いいえ  
-                </button></div>
-            </dialog>
-
-        </div>
       </form>
+      <ConfirmDialog
+        ref={dialogRef}
+        title={confirmTitle}
+        message={confirmMessage}
+        onConfirm={onConfirm}
+        onCancel={closeDialog}
+        confirmButtonClassName="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+      />
     </div>
   );
   

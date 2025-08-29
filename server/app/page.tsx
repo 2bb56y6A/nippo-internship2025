@@ -87,14 +87,15 @@ export default async function Home() {
     revalidatePath('/');
   }
 
-
   return (
     <>
-      <h1 className="text-5xl font-bold text-black-400">
-        <span className="text-red-500">To</span>
-        <span className="text-blue-500">Do</span>
-        リスト
-      </h1>
+      <div className="flex items-center">
+        <h1 className="text-5xl font-bold text-black-400">
+          <span className="text-red-500">To</span>
+          <span className="text-blue-500">Do</span>
+          リスト
+        </h1>
+      </div>
       <TodoForm
         initialTodos={data}
         saveTodoAction={saveTodo}
