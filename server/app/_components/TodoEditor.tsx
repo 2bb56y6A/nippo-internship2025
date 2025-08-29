@@ -18,7 +18,7 @@ interface StatusOption {
 
 const statusOptions: StatusOption[] = TODO_STATUSES;
 
-const TodoEditor = ({ editTargetTodo, onSubmit, isEditing, onCancel }): JSX.Element => {
+const TodoEditor = ({ editTargetTodo, onSubmit, isEditing }): JSX.Element => {
   if (!editTargetTodo) {
     return <p>loading...</p>
   };

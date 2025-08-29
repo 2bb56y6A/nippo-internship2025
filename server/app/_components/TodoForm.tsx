@@ -2,7 +2,7 @@
 
 import React from "react";
 import TodoItem from "@/app/_components/TodoItem";
-import { TodoStatus, TodoData} from "@/constants/todo";
+import { TodoStatus, TodoData, SaveWords } from "@/constants/todo";
 import TodoEditor from "@/app/_components/TodoEditor";
 
 // 新規Todoのテンプレート
@@ -16,7 +16,7 @@ const newTodoTemplate: Omit<TodoData, 'id'> & { id: null } = {
 
 type TodoFormProps = {
   initialTodos: TodoData[];
-  saveTodoAction: (formData: FormData) => Promise<void>;
+  saveTodoAction: (todoData: TodoData, operation: SaveWords) => Promise<void>;
   deleteTodoAction: (id: number) => Promise<void>;
 };
 
@@ -25,10 +25,12 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
   const [todoList, setTodoList] = React.useState<TodoData[]>(initialTodos);
   const [editingTodoIndex, setEditingTodoIndex] = React.useState<number | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-
+  const isEditing = editingTodoIndex !== undefined;
   const editTargetTodo = (editingTodoIndex !== undefined && todoList[editingTodoIndex])
     ? todoList[editingTodoIndex]
     : newTodoTemplate;
+
+
   
   React.useEffect(() => {
     setTodoList(initialTodos);
@@ -38,19 +40,11 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    const formData = new FormData();
-    formData.append('title', submittedTodo.title);
-    formData.append('description', submittedTodo.description);
-    formData.append('status', submittedTodo.status.toString());
+    // 編集中かどうかに基づいて操作を決定
+    const operation = isEditing ? SaveWords.isEditing : SaveWords.isAdding;
 
-    // IDが存在する場合（更新の場合）のみ、FormDataにIDを追加
-    if (submittedTodo.id) {
-      formData.append('id', submittedTodo.id.toString());
-    }
-
-    
     //DBへの保存処理はサーバーアクションに任せます。
-    await saveTodoAction(formData);
+    await saveTodoAction(submittedTodo, operation);
 
     // フォームを新規作成モードに戻す
     setEditingTodoIndex(undefined);
@@ -86,8 +80,12 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
       <TodoEditor 
         editTargetTodo={editTargetTodo} 
         onSubmit={onTodoSubmitted} 
+<<<<<<< HEAD
         isEditing={editingTodoIndex !== undefined}
       />
+=======
+        isEditing={isEditing}/>
+>>>>>>> main
     </>
   );
 };
