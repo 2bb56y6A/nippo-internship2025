@@ -1,5 +1,5 @@
 import TodoForm from "@/app/_components/TodoForm";
-import { TodoData, TodoStatus } from "@/constants/todo";
+import { SaveWords, TodoData, TodoStatus } from "@/constants/todo";
 import { Pool } from "pg";
 import { revalidatePath } from 'next/cache';
 
@@ -36,30 +36,30 @@ export default async function Home() {
   });
 
   // ToDoを追加または更新するための関数
-  async function saveTodo(formData: FormData) {
+  async function saveTodo(todo: TodoData, operation: SaveWords) {
     'use server';
 
+    const { id, title, description, status } = todo;
     const client = await pool.connect();
     try {
-      // フォームから送信されたデータを取得
-      const id = formData.get('id') as string | null;
-      const title = formData.get('title') as string;
-      const description = formData.get('description') as string;
-      const status = Number(formData.get('status'));
-
-      if (id) {
-        // IDがあれば更新処理
-        await client.query(
-          'UPDATE todo_items SET title = $1, description = $2, state = $3 WHERE todo_id = $4',
-          [title, description, status, id]
-        );
-      } else {
-        // IDがなければ新規追加処理
-        await client.query(
-          'INSERT INTO todo_items (title, description, state) VALUES ($1, $2, $3)',
-          [title, description, status]
-        );
+      if (operation === SaveWords.isEditing) {
+      // 編集操作の場合、IDは必須
+      if (!id) {
+        throw new Error('編集操作にはIDが必要です。');
       }
+      // 更新処理
+      await client.query(
+        'UPDATE todo_items SET title = $1, description = $2, state = $3 WHERE todo_id = $4',
+        [title, description, status, id]
+      );
+    } else {
+      // operation === SaveWords.isAdding
+      // 追加処理
+      await client.query(
+        'INSERT INTO todo_items (title, description, state) VALUES ($1, $2, $3)',
+        [title, description, status]
+      );
+    }
     } catch (error) {
       console.error("Database Error:", error);
     } finally {
@@ -84,28 +84,6 @@ export default async function Home() {
     } finally {
       client.release();
     }
-    revalidatePath('/');
-  }
-
- async function resetData() {
-  'use server';
-
-  const client = await pool.connect();
-    try {
-    // TRUNCATEで全件削除とIDのシーケンスリセットを同時に行う
-    // その後、初期データを挿入する
-      await client.query(`
-        TRUNCATE TABLE public.todo_items RESTART IDENTITY;
-        INSERT INTO public.todo_items (state, title, description) VALUES
-        (0, 'はじめていない', 'これはまだ着手していないタスクです。'),    
-        (1, 'いまやってる', 'これは現在対応中のタスクです。'),
-        (2, '終わった', 'これは対応が完了したタスクです。');
-      `);
-    } catch (error) {
-      console.error("Database Error:", error);
-    } finally {
-    client.release();
-    } 
     revalidatePath('/');
   }
 
