@@ -79,8 +79,8 @@ const TodoForm = ({ children }): JSX.Element => {
       ))}
       <TodoEditor 
         editTargetTodo={editTargetTodo} 
-        onSubmit={onTodoSubmitted}
-      />
+        onSubmit={onTodoSubmitted} 
+        isEditing={editingTodoIndex !== undefined}/>
     </>
   );
 };
