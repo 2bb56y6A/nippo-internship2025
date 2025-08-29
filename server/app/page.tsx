@@ -36,30 +36,30 @@ export default async function Home() {
   });
 
   // ToDoを追加または更新するための関数
-  async function saveTodo(formData: FormData) {
+  async function saveTodo(todo: TodoData, operation: 'add' | 'edit') {
     'use server';
 
+    const { id, title, description, status } = todo;
     const client = await pool.connect();
     try {
-      // フォームから送信されたデータを取得
-      const id = formData.get('id') as string | null;
-      const title = formData.get('title') as string;
-      const description = formData.get('description') as string;
-      const status = Number(formData.get('status'));
-
-      if (id) {
-        // IDがあれば更新処理
-        await client.query(
-          'UPDATE todo_items SET title = $1, description = $2, state = $3 WHERE todo_id = $4',
-          [title, description, status, id]
-        );
-      } else {
-        // IDがなければ新規追加処理
-        await client.query(
-          'INSERT INTO todo_items (title, description, state) VALUES ($1, $2, $3)',
-          [title, description, status]
-        );
+      if (operation === 'edit') {
+      // 編集操作の場合、IDは必須
+      if (!id) {
+        throw new Error('編集操作にはIDが必要です。');
       }
+      // 更新処理
+      await client.query(
+        'UPDATE todo_items SET title = $1, description = $2, state = $3 WHERE todo_id = $4',
+        [title, description, status, id]
+      );
+    } else {
+      // operation === 'add' の場合
+      // 追加処理
+      await client.query(
+        'INSERT INTO todo_items (title, description, state) VALUES ($1, $2, $3)',
+        [title, description, status]
+      );
+    }
     } catch (error) {
       console.error("Database Error:", error);
     } finally {

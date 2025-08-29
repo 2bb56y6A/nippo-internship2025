@@ -16,7 +16,7 @@ const newTodoTemplate: Omit<TodoData, 'id'> & { id: null } = {
 
 type TodoFormProps = {
   initialTodos: TodoData[];
-  saveTodoAction: (formData: FormData) => Promise<void>;
+  saveTodoAction: (todoData: TodoData, operation: 'add' | 'edit') => Promise<void>;
   deleteTodoAction: (id: number) => Promise<void>;
 };
 
@@ -39,19 +39,12 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormPr
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    const formData = new FormData();
-    formData.append('title', submittedTodo.title);
-    formData.append('description', submittedTodo.description);
-    formData.append('status', submittedTodo.status.toString());
-
-    // IDが存在する場合（更新の場合）のみ、FormDataにIDを追加
-    if (submittedTodo.id) {
-      formData.append('id', submittedTodo.id.toString());
-    }
+    // 編集中かどうかに基づいて操作を決定
+    const operation = editingTodoIndex !== undefined ? 'edit' : 'add';
 
     
     //DBへの保存処理はサーバーアクションに任せます。
-    await saveTodoAction(formData);
+    await saveTodoAction(submittedTodo, operation);
 
     // フォームを新規作成モードに戻す
     setEditingTodoIndex(undefined);
