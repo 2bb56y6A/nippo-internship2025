@@ -2,7 +2,6 @@
 
 import React, { forwardRef } from "react";
 
-// Propsの定義は変更なし
 type ConfirmDialogProps = {
   title: string;
   message: string;
@@ -13,7 +12,6 @@ type ConfirmDialogProps = {
   confirmButtonClassName?: string;
 };
 
-// forwardRefの修正
 const ConfirmDialog = forwardRef<HTMLDialogElement, ConfirmDialogProps>(
   (
     {
@@ -21,7 +19,6 @@ const ConfirmDialog = forwardRef<HTMLDialogElement, ConfirmDialogProps>(
       message,
       onConfirm,
       onCancel,
-      // 不足していたpropsを追加
       confirmButtonLabel = "はい", 
       cancelButtonLabel = "いいえ",
       confirmButtonClassName,
@@ -32,7 +29,6 @@ const ConfirmDialog = forwardRef<HTMLDialogElement, ConfirmDialogProps>(
     return (
       <dialog
         ref={ref}
-        // classNameを具体的に指定
         className="fixed inset-0 m-auto h-fit w-fit rounded-lg p-6 shadow-lg"
         {...props}
       >
@@ -54,7 +50,7 @@ const ConfirmDialog = forwardRef<HTMLDialogElement, ConfirmDialogProps>(
         </div>
       </dialog>
     );
-  } // ここにあった不要な `};` を削除
+  }
 );
 
 ConfirmDialog.displayName = 'ConfirmDialog';
