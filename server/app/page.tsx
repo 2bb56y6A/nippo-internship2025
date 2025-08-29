@@ -1,10 +1,9 @@
 import TodoForm from "@/app/_components/TodoForm";
-import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
+import { SaveWords, TodoData, TodoStatus } from "@/constants/todo";
 import { Pool } from "pg";
+import { revalidatePath } from 'next/cache';
 
-async function LoadTodoItemsFromDB() {
-
-  const pool = new Pool({
+const pool = new Pool({
     user: 'postgres',
     password: 'postgres',
     host: 'db',
@@ -12,11 +11,16 @@ async function LoadTodoItemsFromDB() {
     database: 'todolist',
   });
 
+async function LoadTodoItemsFromDB() {
   const client = await pool.connect();
-  const ret = await client.query('select * from todo_items', []);
-  await client.release(true);
-  return ret.rows;
-
+  try {
+    // ID順で取得することで、表示順を安定させます
+    const ret = await client.query('SELECT * FROM todo_items ORDER BY todo_id ASC');
+    return ret.rows;
+  } finally {
+    // client.release(true) の `true` は非推奨のため削除
+    client.release();
+  }
 }
 
 export default async function Home() {
@@ -31,6 +35,59 @@ export default async function Home() {
     }
   });
 
+  // ToDoを追加または更新するための関数
+  async function saveTodo(todo: TodoData, operation: SaveWords) {
+    'use server';
+
+    const { id, title, description, status } = todo;
+    const client = await pool.connect();
+    try {
+      if (operation === SaveWords.isEditing) {
+      // 編集操作の場合、IDは必須
+      if (!id) {
+        throw new Error('編集操作にはIDが必要です。');
+      }
+      // 更新処理
+      await client.query(
+        'UPDATE todo_items SET title = $1, description = $2, state = $3 WHERE todo_id = $4',
+        [title, description, status, id]
+      );
+    } else {
+      // operation === SaveWords.isAdding
+      // 追加処理
+      await client.query(
+        'INSERT INTO todo_items (title, description, state) VALUES ($1, $2, $3)',
+        [title, description, status]
+      );
+    }
+    } catch (error) {
+      console.error("Database Error:", error);
+    } finally {
+      await client.release(true);
+    }
+
+    // データベース更新後、このページのデータを再取得して画面を更新するようNext.jsに指示
+    revalidatePath('/');
+  }
+
+  // ToDoを削除するための関数
+  async function deleteTodo(id: number) {
+    'use server';
+
+    if (!id) return; // IDがない場合は何もしない
+
+    const client = await pool.connect();
+    try {
+      await client.query('DELETE FROM todo_items WHERE todo_id = $1', [id]);
+    } catch (error) {
+      console.error("Database Error:", error);
+    } finally {
+      client.release();
+    }
+    revalidatePath('/');
+  }
+
+
   return (
     <>
       <h1 className="text-5xl font-bold text-black-400">
@@ -38,7 +95,11 @@ export default async function Home() {
         <span className="text-blue-500">Do</span>
         リスト
       </h1>
-      <TodoForm children={data} />
+      <TodoForm
+        initialTodos={data}
+        saveTodoAction={saveTodo}
+        deleteTodoAction={deleteTodo}
+      />
     </>
   );
 }

@@ -2,54 +2,53 @@
 
 import React from "react";
 import TodoItem from "@/app/_components/TodoItem";
-import { TodoStatus, TodoData} from "@/constants/todo";
+import { TodoStatus, TodoData, SaveWords } from "@/constants/todo";
 import TodoEditor from "@/app/_components/TodoEditor";
 
 // 新規Todoのテンプレート
-const newTodoTemplate = {
+//初期値を空文字列に変更
+const newTodoTemplate: Omit<TodoData, 'id'> & { id: null } = {
+  id: null,
   status: TodoStatus.Backlog,
-  title: "Newタスク",
-  description: "タスクの説明文",
+  title: "",
+  description: "",
 };
 
-const TodoForm = ({ children }): JSX.Element => {
+type TodoFormProps = {
+  initialTodos: TodoData[];
+  saveTodoAction: (todoData: TodoData, operation: SaveWords) => Promise<void>;
+  deleteTodoAction: (id: number) => Promise<void>;
+};
 
-  const [todoList, setTodoList] = React.useState<TodoData[]>(children);
+const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction }: TodoFormProps): JSX.Element => {
+
+  const [todoList, setTodoList] = React.useState<TodoData[]>(initialTodos);
   const [editingTodoIndex, setEditingTodoIndex] = React.useState<number | undefined>(undefined);
-  
-  // useStateの遅延初期化を使い、初回レンダリング時のみ実行
-  const [editTargetTodo, setEditTargetTodo] = React.useState<TodoData>(() => {
-    const initialId = todoList.length > 0 ? Math.max(...todoList.map(t => t.id)) + 1 : 1;
-    return {
-      ...newTodoTemplate,
-      id: initialId,
-    };
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const isEditing = editingTodoIndex !== undefined;
+  const [editTargetTodo, setEditTargetTodo] = React.useState<TodoData | typeof newTodoTemplate>(() => {
+    // この関数は初回レンダリング時に一度だけ実行されます
+    return newTodoTemplate;
   });
+  
+  React.useEffect(() => {
+    setTodoList(initialTodos);
+  }, [initialTodos]);
 
-  const onTodoSubmitted = (submittedTodo: TodoData) => {
-    //更新後の新しい配列
-    let updatedList;
-    
-    if (editingTodoIndex !== undefined) {
-      // 更新処理
-      updatedList = todoList.map((item, index) =>
-        index === editingTodoIndex ? submittedTodo : item
-      );
-    } else {
-      // 新規追加処理
-      updatedList = [...todoList, submittedTodo];
-    }
+ const onTodoSubmitted = async (submittedTodo: TodoData) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
-    setTodoList(updatedList);
-    // 新しいIDを計算して新規Todoのテンプレートを更新
-    const maxId = updatedList.length > 0 ? Math.max(...updatedList.map(t => t.id)) : 0;
-    const nextNewTodo = {
-      ...newTodoTemplate,
-      id: maxId + 1,
-    };
+    // 編集中かどうかに基づいて操作を決定
+    const operation = isEditing ? SaveWords.isEditing : SaveWords.isAdding;
 
-    setEditTargetTodo(nextNewTodo);
+    //DBへの保存処理はサーバーアクションに任せます。
+    await saveTodoAction(submittedTodo, operation);
+
+    // フォームを新規作成モードに戻す
     setEditingTodoIndex(undefined);
+    setEditTargetTodo(newTodoTemplate);
+    setIsSubmitting(false);
   };
 
   const onTodoEditBegining = (todo: TodoData) => {
@@ -58,13 +57,16 @@ const TodoForm = ({ children }): JSX.Element => {
     setEditTargetTodo(todoList[idx]);
   }
 
-   const onDeleteTodo = (id: number) => {
-    setTodoList((prevTodoList) => {
-      // 対象のidでないTodoを残す
-      return prevTodoList.filter((todo) => {
-        return todo.id !== id;
-      });
-    });
+   const onDeleteTodo = async (id: number) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    //削除処理はサーバーアクションを呼び出す
+    await deleteTodoAction(id);
+
+    // フォームを新規作成モードに戻す
+    setEditingTodoIndex(undefined);
+    setEditTargetTodo(newTodoTemplate);
+    setIsSubmitting(false);
   };
 
   return (
@@ -80,7 +82,7 @@ const TodoForm = ({ children }): JSX.Element => {
       <TodoEditor 
         editTargetTodo={editTargetTodo} 
         onSubmit={onTodoSubmitted} 
-        isEditing={editingTodoIndex !== undefined}/>
+        isEditing={isEditing}/>
     </>
   );
 };
