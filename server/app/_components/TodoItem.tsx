@@ -56,11 +56,11 @@ const TodoItem = ({ todo, isActive, onEditBeginingHandler, onDeleteTodo}: TodoIt
       <div className="px-4 py-2 -mx-3 flex-grow">
         <div className="mx-3">
           <span className={`font-semibold ${itemDesign.textColor}`}>
-            {todo.title}
+            {todo.title || '(タイトルなし)'}
           </span>
           <p className="me-1 mb-0 text-gray-700">{itemDesign.caption}</p>
           <p className="text-sm text-gray-600 dark:text-gray-200">
-            {todo.description}
+            {todo.description || '(詳細なし)'}
           </p>
           <button
             className="flex w-15 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

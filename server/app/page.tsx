@@ -1,7 +1,8 @@
 import TodoForm from "@/app/_components/TodoForm";
-import { TodoData, TodoStatus } from "@/app/_types/TodoTypes";
+import { TodoData, TodoStatus } from "@/constants/todo";
 import { Pool } from "pg";
 import { revalidatePath } from 'next/cache';
+import ResetButton from "@/app/_components/ResetButton";
 
 const pool = new Pool({
     user: 'postgres',
@@ -87,13 +88,39 @@ export default async function Home() {
     revalidatePath('/');
   }
 
+  // deleteTodo関数の下に追加
+ async function resetData() {
+  'use server';
+
+  const client = await pool.connect();
+    try {
+    // TRUNCATEで全件削除とIDのシーケンスリセットを同時に行う
+    // その後、初期データを挿入する
+      await client.query(`
+        TRUNCATE TABLE public.todo_items RESTART IDENTITY;
+        INSERT INTO public.todo_items (state, title, description) VALUES
+        (0, 'はじめていない', 'これはまだ着手していないタスクです。'),    
+        (1, 'いまやってる', 'これは現在対応中のタスクです。'),
+        (2, '終わった', 'これは対応が完了したタスクです。');
+      `);
+    } catch (error) {
+      console.error("Database Error:", error);
+    } finally {
+    client.release();
+    } 
+    revalidatePath('/');
+  }
+
   return (
     <>
-      <h1 className="text-5xl font-bold text-black-400">
-        <span className="text-red-500">To</span>
-        <span className="text-blue-500">Do</span>
-        リスト
-      </h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-5xl font-bold text-black-400">
+          <span className="text-red-500">To</span>
+          <span className="text-blue-500">Do</span>
+          リスト
+        </h1>
+        <ResetButton resetDataAction={resetData} />
+      </div>
       <TodoForm
         initialTodos={data}
         saveTodoAction={saveTodo}
