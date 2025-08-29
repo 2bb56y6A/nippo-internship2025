@@ -3,14 +3,12 @@
 import React from "react";
 import TodoItem from "@/app/_components/TodoItem";
 import { TODO_STATUSES, TODO_STATUS_LABELS, SAVE_BUTTON_LABELS, TodoStatus, TodoData, SaveWords} from "@/constants/todo";
-import { FaTimesCircle } from "react-icons/fa"
 import ConfirmDialog from "@/app/_components/ConfirmDialog";
 
 type TodoEditorProps = {
   editTargetTodo: TodoData;
   onSubmit: (todo: TodoData) => void;
   isEditing: boolean;
-  onCancel: () => void;
 };
 
 interface StatusOption {
@@ -83,17 +81,6 @@ const TodoEditor = ({ editTargetTodo, onSubmit, isEditing, onCancel }): JSX.Elem
                 </option>
               ))}
             </select>
-
-            {isEditing && (
-              <button
-                type="button"
-                onClick={onCancel}
-                className="p-1 text-gray-400 rounded-full hover:bg-gray-200 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
-                aria-label="編集をやめる"
-              >
-                <FaTimesCircle className="w-6 h-6" />
-              </button>
-            )}
           </div>
         </div>
 

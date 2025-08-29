@@ -63,10 +63,6 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction, updateTodoSt
     setEditingTodoIndex(idx);
   }
 
-  const onTodoEditCancel = () => {
-    setEditingTodoIndex(undefined);
-  };
-
    const onDeleteTodo = async (id: number) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
@@ -112,7 +108,6 @@ const TodoForm = ({ initialTodos, saveTodoAction, deleteTodoAction, updateTodoSt
         editTargetTodo={editTargetTodo} 
         onSubmit={onTodoSubmitted} 
         isEditing={editingTodoIndex !== undefined}
-        onCancel={onTodoEditCancel}
       />
     </>
   );
